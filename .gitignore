@@ -22,4 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.pdf
+# Local environment variables
 .env
+.env.local
+
+# Ignore the public asset folder
+public/
