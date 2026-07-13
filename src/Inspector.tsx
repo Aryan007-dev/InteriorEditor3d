@@ -32,6 +32,22 @@ function Inspector() {
                 )}
             </div>
         )
-    }    
+    }
+    if (node.type === "Floor") {
+        return (
+            <div>
+                <label>
+                    Material
+                    <select
+                        value={node.assetId}
+                        onChange={(e) => updateNode(node.id, { assetId: e.target.value as "laminate" | "concrete" })}
+                    >
+                        <option value="laminate">Laminate</option>
+                        <option value="concrete">Concrete</option>
+                    </select>
+                </label>
+            </div>
+        )
+    }
 }
 export default Inspector;

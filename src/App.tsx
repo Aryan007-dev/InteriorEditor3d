@@ -1,15 +1,19 @@
 import { useState } from "react";
-
+import "./App.css";
 import { useEditor } from "./store";
 import FloorPlan from "./FloorPlan";
 import Toolbar from "./Toolbar";
 import Scene from "./Scene";
 import SideBar from "./sidebar";
 import Inspector from "./Inspector";
+import ChatPanel from "./ChatPanel";
+
 const App = () => {
   const addNode = useEditor((s) => s.addNode);
+
   const [points, setPoints] = useState<[number, number][]>([]);
   const [view, setView] = useState<"2d" | "3d">("2d");
+  const [catalogOpen, setCatalogOpen] = useState(true);
 
   const buildWalls = () => {
     const scale = 50;
@@ -32,32 +36,33 @@ const App = () => {
   };
 
   return (
-    <>
-      <Toolbar />
-
-      <button
-        onClick={() => {
-          if (view === "2d") {
-            buildWalls();
-            setPoints([]);
-            setView("3d");
-          } else {
-            setView("2d");
-          }
-        }}
-      >
-        Switch to {view === "2d" ? "3D" : "2D"}
-      </button>
-      <div >
-        <Inspector/>
-      </div>
-      <div style={{ display: "flex" }}>
-        <SideBar />
-        <div style={{ flex: 1 }}>
+    <div className="editor-app">
+      <header className="editor-toolbar">
+        <Toolbar />
+        <button
+          type="button"
+          onClick={() => {
+            if (view === "2d") {
+              buildWalls();
+              setPoints([]);
+              setView("3d");
+            } else {
+              setView("2d");
+            }
+          }}
+        >
+          Switch to {view === "2d" ? "3D" : "2D"}
+        </button>
+        <Inspector />
+      </header>
+      <main className="editor-workspace">
+        <SideBar open={catalogOpen} onToggle={() => setCatalogOpen((isOpen) => !isOpen)} />
+        <section className="editor-viewport">
           {view === "2d" ? <FloorPlan points={points} setPoints={setPoints} /> : <Scene />}
-        </div>
-      </div>
-    </>
+        </section>
+        <ChatPanel />
+      </main>
+    </div>
   );
 };
 

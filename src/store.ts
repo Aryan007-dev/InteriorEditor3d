@@ -23,7 +23,12 @@ interface BaseNode{
     parentId:string|null;
     transform:Transform
 }
-
+interface FloorNode extends BaseNode{
+    type:"Floor",
+    assetId:"laminate" | "concrete",
+    length:number,
+    width:number
+}
 interface FurnitureNode extends BaseNode{
     type:"furniture";
     assetId:string;
@@ -45,7 +50,7 @@ interface LightNode extends BaseNode{
     color:string
     temperature?:number
 }
-type SceneNode = FurnitureNode | WallNode | LightNode;
+export type SceneNode = FurnitureNode | WallNode | LightNode|FloorNode;
 
 interface SceneDocument{
     id:string,
@@ -53,6 +58,7 @@ interface SceneDocument{
     room:{width:number;length:number;height:number}
     nodes:Record<string,SceneNode>
 }
+
 interface EditorState {
     doc: SceneDocument;         
     selectedIds: string[];       

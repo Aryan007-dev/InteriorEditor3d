@@ -21,6 +21,23 @@ function Toolbar() {
       assetId,
     });
 
+  const addFloor=(name:string)=>
+   addNode({
+      id: crypto.randomUUID(),
+      name,
+      parentId: null,
+      transform: {
+        position: [0, 0, 0],
+        rotation: [0, 0, 0, 1],
+        scale: [1, 1, 1],
+      },
+      type: "Floor",
+      assetId:"laminate",
+      width:5,
+      length:4
+    });
+
+
   return (
     <div>
       <button onClick={() => localStorage.setItem("scene", JSON.stringify(doc))}>Save</button>
@@ -39,6 +56,7 @@ function Toolbar() {
       <button onClick={redo}>Redo</button>
       <button onClick={() => setMode("translate")}>Move</button>
       <button onClick={() => setMode("rotate")}>Rotate</button>
+      <button onClick={() => addFloor("Laminate Floor")}>Add Floor</button>
     </div>
   );
 }
