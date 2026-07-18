@@ -22,6 +22,7 @@ function Wall({start,end,height,thickness,materialId,selected}:{
     const midZ = (start[1] + end[1]) / 2;
     const angle = -Math.atan2(dz, dx);    
     return (<>
+    
         <Billboard position={[midX,height/2+0.5,midZ]}>
         <Text  fontSize={0.3} color={"black"} material-depthTest={false}>
         {`${length.toFixed(2)}m`}
@@ -34,6 +35,7 @@ function Wall({start,end,height,thickness,materialId,selected}:{
        <SurfaceMaterial finish={materials[materialId]}></SurfaceMaterial>
         {selected && <Edges color="#b52323" />}
         </mesh>
+
         </>
     )
 }

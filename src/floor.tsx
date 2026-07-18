@@ -21,7 +21,7 @@ function Floor({ assetId, length, width }: { assetId: FloorAssetId; length: numb
 
   Object.values(textures).forEach((t) => {
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
-    t.repeat.set(25, 25);
+    t.repeat.set(10, 10);
   });
 
   return (

@@ -4,10 +4,46 @@ type CatalogItemBase = {
   picture?: string;
 };
 
+// Compass direction the asset's FRONT faces in its default GLB orientation.
+// World axes: north = -z, south = +z, east = +x, west = -x, y is up.
+export type Compass = "north" | "south" | "east" | "west";
+
 export type FurnitureItem = CatalogItemBase & {
   kind: "furniture";
   assetId: string;
   url: string;
+  // Which way the piece "faces" by default. Tells the AI where the back is
+  // (e.g. a sofa's back is opposite its front). Defaults to "south" if omitted.
+  faces?: Compass;
+  // Uniform scale to apply at spawn so the asset matches its real-world size.
+  // Computed once by scripts/catalog-pipeline.mjs from the GLB's bounding-box
+  // height vs a per-category target. Missing => treated as 1 (no change).
+  scale?: number;
+  // Y offset (metres) to lift the asset so its bounding-box bottom sits on the
+  // floor (y = 0). GLBs have inconsistent pivots, so this grounds every asset
+  // regardless of where its author left the mesh origin. Missing => 0.
+  // NOTE: grounding is now handled by baking the lift into the model in
+  // Furniture.tsx (the `lift` field), so this scalar is deprecated/unused.
+  groundOffset?: number;
+  // Native Y lift (pre-scale) baked into the model by Furniture.tsx so the GLB's
+  // bounding-box bottom sits at the group origin. Node Y = 0 then means "bottom
+  // on the floor" with no scale-dependent scalar. Computed at runtime.
+  lift?: number;
+  // Real-world footprint [width(x), depth(z)] in metres, measured at runtime
+  // from the GLB bounding box × the baked scale. Shared per asset (catalog
+  // registry), used for collision/planning so we don't churn store undo history.
+  footprint?: [number, number];
+  // Vision-enriched attributes, filled by scripts/catalog-pipeline.mjs via a
+  // Groq vision model. All optional so a failed/offline enrichment still builds.
+  style?: string;
+  material?: string[];
+  palette?: string[];
+  tags?: string[];
+  room?: string;
+  mood?: string;
+  seats?: number;
+  // Short human-readable description of the piece (vision-generated).
+  description?: string;
 };
 
 type WallItem = CatalogItemBase & {
@@ -32,7 +68,7 @@ type CatalogSection = {
 // here because they have no asset file to screenshot.
 import { CATALOG_FURNITURE } from "./catalog.models";
 
-const CATEGORY_ORDER = ["Sofas", "Chairs", "Tables", "Cabinets"];
+const CATEGORY_ORDER = ["Sofas", "Chairs", "Tables", "Cabinets","Beds"];
 
 const furnitureSections: CatalogSection[] = Object.keys(CATALOG_FURNITURE)
   .sort((a, b) => {
@@ -71,4 +107,12 @@ export const registory: Record<string, string> = Object.fromEntries(
   CATALOG.flatMap((section) => section.items)
     .filter((item): item is FurnitureItem => item.kind === "furniture")
     .map((item) => [item.assetId, item.url]),
+);
+
+// assetId -> full FurnitureItem (includes the baked `scale`). Used at spawn
+// time to normalize an asset to real-world size.
+export const FURNITURE_BY_ID: Record<string, FurnitureItem> = Object.fromEntries(
+  CATALOG.flatMap((section) => section.items)
+    .filter((item): item is FurnitureItem => item.kind === "furniture")
+    .map((item) => [item.assetId, item]),
 );

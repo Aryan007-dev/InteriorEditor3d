@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEditor } from "./store";
 
 const GRID = 20; 
 const CLOSE_DIST = 10; 
@@ -17,10 +18,9 @@ const resolvePoint = (
   return [x, y];
 };
 
-function FloorPlan({ points, setPoints }: {
-  points: [number, number][];
-  setPoints: (p: [number, number][]) => void;
-}) {
+function FloorPlan() {
+  const points = useEditor((s) => s.doc.floorPlan);
+  const setPoints = useEditor((s) => s.setFloorPlan);
   const [hover, setHover] = useState<[number, number] | null>(null);
 
   return (

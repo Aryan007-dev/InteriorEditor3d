@@ -14,6 +14,7 @@ const App = () => {
   const [points, setPoints] = useState<[number, number][]>([]);
   const [view, setView] = useState<"2d" | "3d">("2d");
   const [catalogOpen, setCatalogOpen] = useState(true);
+  console.log("[App] render. view =", view);
 
   const buildWalls = () => {
     const scale = 50;
@@ -42,13 +43,9 @@ const App = () => {
         <button
           type="button"
           onClick={() => {
-            if (view === "2d") {
-              buildWalls();
-              setPoints([]);
-              setView("3d");
-            } else {
-              setView("2d");
-            }
+            useEditor.getState().buildRoomFromPlan();
+            setPoints([]);          // optional: clear local (no longer used for walls)
+            setView("3d");
           }}
         >
           Switch to {view === "2d" ? "3D" : "2D"}
@@ -58,7 +55,7 @@ const App = () => {
       <main className="editor-workspace">
         <SideBar open={catalogOpen} onToggle={() => setCatalogOpen((isOpen) => !isOpen)} />
         <section className="editor-viewport">
-          {view === "2d" ? <FloorPlan points={points} setPoints={setPoints} /> : <Scene />}
+          {view === "2d" ? <FloorPlan /> : <Scene />}
         </section>
         <ChatPanel />
       </main>

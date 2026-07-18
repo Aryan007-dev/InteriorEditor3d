@@ -10,11 +10,15 @@ export default function ChatPanel() {
   const send = async () => {
     const userText = text.trim();
     if (!userText || busy) return;
+    console.log("[ChatPanel] send:", userText, "history len:", messages.length);
     setBusy(true);
     setText("");
     try {
       const updated = await sendMessage(messages, userText);
+      console.log("[ChatPanel] got", updated.length, "messages back");
       setMessages(updated);
+    } catch (err) {
+      console.error("[ChatPanel] sendMessage threw:", err);
     } finally {
       setBusy(false);
     }
